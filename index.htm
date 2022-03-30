@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Liczba PI</title>
+</head>
+<body>
+    <style>
+        body{
+            background-color: #171717;
+            color: #dbdbdb;
+            font-size: 20px;
+        }
+    </style>
+
+    <h1>Obliczanie PI</h1>
+
+    <hr>
+
+    <h2>Wzór Leibniz'a</h2>
+    <img style="background-color: #dbdbdb;" src="img/wzor_leibniza.svg">
+
+    <br><br>
+
+    <button type="button" onclick="change_iteration(-1)">Poprzednia iteracja</button>
+    <button type="button" onclick="change_iteration(1)">Następna iteracja</button>
+    <input id="d" type="text" value="1">
+
+    <p id="iteration_counter"><b>Liczba iteracji:</b> 0</p>
+    <p id="leibniz_formula"></p>
+    <p id="leibniz_formula_result"></p>
+    <p id="absolute_error"></p>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
+    <script>
+        var iteration = 0
+        var formula = []
+
+        var d_iteration_counter = document.getElementById("iteration_counter")
+        var d_leibniz_formula = document.getElementById("leibniz_formula")
+        var d_leibniz_formula_result = document.getElementById("leibniz_formula_result")
+        var d_absolute_error = document.getElementById("absolute_error")
+        function change_iteration(change){
+            change *= parseInt(document.getElementById("d").value)
+            if (iteration + change < 0) {iteration = 0}
+            else {iteration += change}
+            d_iteration_counter.innerHTML = "<b>Liczba iteracji: </b>" + iteration
+
+            do_formula()
+        }
+
+        function do_formula(){
+            while ((formula.length <= iteration)) formula.push(Math.pow((-1), formula.length) / (2 * formula.length + 1))
+
+            var formula_completed = "PI = ok. 4("
+            
+            for (var i = 0; i < Math.min(iteration + 1, 20); i++) {
+                if (i == 0){
+                    formula_completed += 1
+                }
+                else if (formula[i] < 0){
+                    formula_completed += " - " + Math.abs(Math.round(formula[i] * 100)/100)
+                }else{
+                    formula_completed += " + " + Math.round(formula[i] * 100)/100
+                }
+            }
+            if (iteration > 20){
+                formula_completed += "+ ...)"
+            }else{
+                formula_completed += ")"
+            }
+
+            d_leibniz_formula.innerHTML = formula_completed
+            
+            var PI = 0
+            for (var i = 0; i < iteration + 1; i++){
+                PI += formula[i]
+            }
+            d_leibniz_formula_result.innerHTML = 4 * PI
+            d_absolute_error.innerHTML = calculate_absolute_error(4 * PI, 3.141592653589793238462643383279502884197)
+
+        }
+
+        function calculate_absolute_error(PI_estimated, PI){
+            return Math.round(Math.abs(PI - PI_estimated) / PI * 1000000000000000000) / 10000000000000000 + "%"
+        }
+
+        do_formula()
+
+    </script>
+</body>
+</html>
